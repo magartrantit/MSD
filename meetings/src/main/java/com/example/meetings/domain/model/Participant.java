@@ -1,14 +1,33 @@
 package com.example.meetings.domain.model;
 
 import com.example.meetings.domain.model.enums.Attendance;
-import jakarta.validation.constraints.*;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
+@Entity
+@Table(name = "participants")
 public class Participant {
-    @NotNull private String id;
-    @NotNull private String meetingId;
-    @NotNull private String userId;
-    @NotNull private Attendance attendance = Attendance.INVITED;
 
+    @Id
+    @Column(length = 36)
+    @NotNull
+    private String id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meeting_id", nullable = false)
+    @NotNull
+    private Meeting meeting;
+
+    @NotNull
+    @Column(name = "user_id", nullable = false, length = 36)
+    private String userId;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Attendance attendance = Attendance.INVITED;
+
+    // getters/setters
 
     public String getId() {
         return id;
@@ -18,12 +37,12 @@ public class Participant {
         this.id = id;
     }
 
-    public String getMeetingId() {
-        return meetingId;
+    public Meeting getMeeting() {
+        return meeting;
     }
 
-    public void setMeetingId(String meetingId) {
-        this.meetingId = meetingId;
+    public void setMeeting(Meeting meeting) {
+        this.meeting = meeting;
     }
 
     public String getUserId() {

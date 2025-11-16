@@ -1,16 +1,43 @@
 package com.example.meetings.domain.model;
 
 import com.example.meetings.domain.model.enums.ItemStatus;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "action_items")
 public class ActionItem {
-    @NotNull private String id;
-    @NotNull private String meetingId;
-    @NotNull private String ownerId;
-    @NotBlank private String title;
-    @NotNull private LocalDate dueDate;
-    @NotNull private ItemStatus status = ItemStatus.OPEN;
+
+    @Id
+    @Column(length = 36)
+    @NotNull
+    private String id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meeting_id", nullable = false)
+    @NotNull
+    private Meeting meeting;
+
+    @NotNull
+    @Column(name = "owner_id", nullable = false, length = 36)
+    private String ownerId;
+
+    @NotBlank
+    @Column(nullable = false, length = 200)
+    private String title;
+
+    @NotNull
+    @Column(name = "due_date", nullable = false)
+    private LocalDate dueDate;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private ItemStatus status = ItemStatus.OPEN;
+
+    // getters / setters
 
     public String getId() {
         return id;
@@ -20,12 +47,12 @@ public class ActionItem {
         this.id = id;
     }
 
-    public String getMeetingId() {
-        return meetingId;
+    public Meeting getMeeting() {
+        return meeting;
     }
 
-    public void setMeetingId(String meetingId) {
-        this.meetingId = meetingId;
+    public void setMeeting(Meeting meeting) {
+        this.meeting = meeting;
     }
 
     public String getOwnerId() {

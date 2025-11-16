@@ -4,12 +4,15 @@ import com.example.meetings.domain.model.*;
 import com.example.meetings.domain.model.enums.Attendance;
 import com.example.meetings.domain.service.impl.ValidationServiceImpl;
 import org.junit.jupiter.api.Test;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ValidationServiceTest {
+
     private final ValidationService svc = new ValidationServiceImpl();
 
     private Meeting meeting() {
@@ -22,24 +25,55 @@ class ValidationServiceTest {
         return m;
     }
 
-    @Test void facilitator_must_be_participant() {
-        Meeting m = meeting(); m.setFacilitatorId("u1");
-        Participant p = new Participant(); p.setMeetingId("m1"); p.setUserId("u1"); p.setAttendance(Attendance.INVITED);
-        assertDoesNotThrow(() -> svc.validateFacilitatorIsParticipant(m, List.of(p)));
-        m.setFacilitatorId("uX");
-        assertThrows(IllegalArgumentException.class, () -> svc.validateFacilitatorIsParticipant(m, List.of(p)));
-    }
-
-    @Test void unique_participants() {
-        Participant p1 = new Participant(); p1.setMeetingId("m1"); p1.setUserId("u1");
-        Participant p2 = new Participant(); p2.setMeetingId("m1"); p2.setUserId("u1");
-        assertThrows(IllegalArgumentException.class, () -> svc.validateUniqueParticipants(List.of(p1,p2)));
-    }
-
-    @Test void due_date_after_meeting() {
+    @Test
+    void facilitator_must_be_participant() {
         Meeting m = meeting();
-        ActionItem ai = new ActionItem(); ai.setMeetingId("m1"); ai.setOwnerId("u1"); ai.setTitle("Task");
+        m.setFacilitatorId("u1");
+
+        Participant p = new Participant();
+        p.setId("p1");
+        p.setUserId("u1");
+        p.setAttendance(Attendance.INVITED);
+        p.setMeeting(m);
+
+        assertDoesNotThrow(() -> svc.validateFacilitatorIsParticipant(m, List.of(p)));
+
+        m.setFacilitatorId("uX");
+        assertThrows(IllegalArgumentException.class,
+                () -> svc.validateFacilitatorIsParticipant(m, List.of(p)));
+    }
+
+    @Test
+    void unique_participants() {
+        Meeting m = meeting();
+
+        Participant p1 = new Participant();
+        p1.setId("p1");
+        p1.setUserId("u1");
+        p1.setMeeting(m);
+
+        Participant p2 = new Participant();
+        p2.setId("p2");
+        p2.setUserId("u1");
+        p2.setMeeting(m);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> svc.validateUniqueParticipants(List.of(p1, p2)));
+    }
+
+    @Test
+    void due_date_after_meeting() {
+        Meeting m = meeting();
+
+        ActionItem ai = new ActionItem();
+        ai.setId("ai1");
+        ai.setOwnerId("u1");
+        ai.setTitle("Task");
+        ai.setMeeting(m);
+
         ai.setDueDate(m.getScheduledAt().toLocalDate().minusDays(1));
-        assertThrows(IllegalArgumentException.class, () -> svc.validateActionItemDueDate(ai, m));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> svc.validateActionItemDueDate(ai, m));
     }
 }

@@ -18,7 +18,8 @@ public class ValidationServiceImpl implements ValidationService {
     public void validateUniqueParticipants(List<Participant> ps) {
         Set<String> seen = new HashSet<>();
         for (Participant p : ps) {
-            String key = p.getMeetingId() + "#" + p.getUserId();
+            String key = p.getMeeting().getId()
+                    + "#" + p.getUserId();
             if (!seen.add(key)) throw new IllegalArgumentException("Duplicate participant: " + key);
         }
     }
