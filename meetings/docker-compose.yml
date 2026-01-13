@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:16
+    container_name: meetings_db
+    environment:
+      POSTGRES_DB: meetings
+      POSTGRES_USER: meetings_user
+      POSTGRES_PASSWORD: meetings_pass
+    ports:
+        - "5433:5432"
+
+    volumes:
+      - meetings_pgdata:/var/lib/postgresql/data
+
+volumes:
+  meetings_pgdata:
