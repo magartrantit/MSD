@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "decisions")
 public class Decision {
@@ -13,10 +17,11 @@ public class Decision {
     @NotNull
     private String id;
 
+    @JsonBackReference("meeting-decisions")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meeting_id", nullable = false)
-    @NotNull
     private Meeting meeting;
+
 
     @NotBlank
     @Column(nullable = false, length = 500)
