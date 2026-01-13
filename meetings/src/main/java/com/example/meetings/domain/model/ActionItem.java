@@ -3,7 +3,8 @@ package com.example.meetings.domain.model;
 import com.example.meetings.domain.model.enums.ItemStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-
+import jakarta.persistence.Column;
+import java.time.LocalDateTime;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -91,4 +92,39 @@ public class ActionItem {
     public void setStatus(ItemStatus status) {
         this.status = status;
     }
+
+    @Column(name = "review_notes", length = 1000)
+    private String reviewNotes;
+
+    @Column(name = "reviewed_by", length = 36)
+    private String reviewedBy;
+
+    @Column(name = "reviewed_at")
+    private LocalDateTime reviewedAt;
+
+    public String getReviewNotes() {
+        return reviewNotes;
+    }
+
+    public void setReviewNotes(String reviewNotes) {
+        this.reviewNotes = reviewNotes;
+    }
+
+    public String getReviewedBy() {
+        return reviewedBy;
+    }
+
+    public void setReviewedBy(String reviewedBy) {
+        this.reviewedBy = reviewedBy;
+    }
+
+    public LocalDateTime getReviewedAt() {
+        return reviewedAt;
+    }
+
+    public void setReviewedAt(LocalDateTime reviewedAt) {
+        this.reviewedAt = reviewedAt;
+    }
 }
+
+

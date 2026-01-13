@@ -8,18 +8,10 @@ services:
       POSTGRES_USER: meetings_user
       POSTGRES_PASSWORD: meetings_pass
     ports:
-<<<<<<< HEAD
         - "5433:5432"
-=======
-      - "5433:5432"
->>>>>>> b6529410999af1bbc196b3d4be870e1ce7b466b3
 
     volumes:
       - meetings_pgdata:/var/lib/postgresql/data
 
 volumes:
-<<<<<<< HEAD
   meetings_pgdata:
-=======
-  meetings_pgdata:
->>>>>>> b6529410999af1bbc196b3d4be870e1ce7b466b3

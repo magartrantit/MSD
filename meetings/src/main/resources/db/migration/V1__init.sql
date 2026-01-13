@@ -36,6 +36,7 @@ CREATE TABLE action_items (
                               title       VARCHAR(200) NOT NULL,
                               due_date    DATE NOT NULL,
                               status      VARCHAR(20) NOT NULL,
+                              review_notes VARCHAR(500),
                               CONSTRAINT fk_action_items_meeting
                                   FOREIGN KEY (meeting_id) REFERENCES meetings(id) ON DELETE CASCADE
 );

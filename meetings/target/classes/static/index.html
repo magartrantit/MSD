@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Meetings – Mini Frontend</title>
+    <style>
+        :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+        body { margin: 0; background: #0b1220; color: #e6edf7; }
+        header { padding: 18px 20px; border-bottom: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.02); }
+        h1 { margin: 0; font-size: 18px; font-weight: 700; }
+        main { padding: 16px 20px; display: grid; gap: 14px; grid-template-columns: 1fr; }
+        @media (min-width: 980px) { main { grid-template-columns: 1fr 1fr; } }
+
+        .card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 14px; }
+        .card h2 { margin: 0 0 10px; font-size: 15px; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        label { display: block; font-size: 12px; opacity: .85; margin-bottom: 6px; }
+        input, select, textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,.12);
+            background: rgba(0,0,0,.25);
+            color: #e6edf7;
+            outline: none;
+        }
+        textarea { min-height: 70px; resize: vertical; }
+        button {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,.16);
+            background: rgba(120,170,255,.18);
+            color: #e6edf7;
+            cursor: pointer;
+            font-weight: 650;
+        }
+        button:hover { background: rgba(120,170,255,.28); }
+        .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        .muted { font-size: 12px; opacity: .75; }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(0,0,0,.35);
+            border: 1px solid rgba(255,255,255,.10);
+            max-height: 520px;
+            overflow: auto;
+        }
+        .pill {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 10px; border-radius: 999px;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.08);
+            font-size: 12px;
+        }
+        .ok { color: #7CFFB2; }
+        .bad { color: #FF8A8A; }
+        hr { border:0; border-top:1px solid rgba(255,255,255,.08); margin:12px 0; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Meetings – Mini Frontend (Sprint 4 + Tasks)</h1>
+</header>
+
+<main>
+    <section class="card">
+        <h2>1) Create Meeting</h2>
+
+        <div class="row">
+            <div>
+                <label>Team ID</label>
+                <input id="teamId" value="t1" />
+            </div>
+            <div>
+                <label>Type</label>
+                <select id="type">
+                    <option>DAILY</option>
+                    <option selected>PLANNING</option>
+                    <option>RETRO</option>
+                    <option>REVIEW</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div>
+                <label>Title</label>
+                <input id="title" value="Planning" />
+            </div>
+            <div>
+                <label>Facilitator ID</label>
+                <input id="facilitatorId" value="u1" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div>
+                <label>Scheduled At (datetime-local)</label>
+                <input id="scheduledAt" type="datetime-local" />
+            </div>
+            <div>
+                <label>Duration Minutes</label>
+                <input id="durationMinutes" type="number" value="60" min="1" />
+            </div>
+        </div>
+
+        <div>
+            <label>Description</label>
+            <textarea id="description">Sprint planning</textarea>
+        </div>
+
+        <div class="actions">
+            <button onclick="createMeeting()">Create</button>
+            <button onclick="listMeetings()">List all meetings</button>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>2) Operations on Meeting</h2>
+
+        <div class="row">
+            <div>
+                <label>Meeting ID</label>
+                <input id="meetingId" placeholder="după Create se pune automat" />
+            </div>
+            <div>
+                <label>Load</label>
+                <div class="actions" style="margin-top: 0">
+                    <button onclick="getMeeting()">Get by ID</button>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <h2 style="margin-top:0">Add Participant</h2>
+        <div class="row">
+            <div>
+                <label>User ID</label>
+                <input id="participantUserId" value="u1" />
+            </div>
+            <div>
+                <label>Attendance</label>
+                <select id="attendance">
+                    <option selected>INVITED</option>
+                    <option>ATTENDED</option>
+                    <option>ABSENT</option>
+                </select>
+            </div>
+        </div>
+        <div class="actions">
+            <button onclick="addParticipant()">Add Participant</button>
+        </div>
+
+        <hr>
+
+        <h2 style="margin-top:0">Start / Complete</h2>
+        <div class="row">
+            <div>
+                <label>Start Facilitator ID</label>
+                <input id="startFacilitatorId" value="u1" />
+            </div>
+            <div class="actions" style="align-items:end">
+                <button onclick="startMeeting()">Start</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div>
+                <label>Complete: Topic Title (min 1 topic)</label>
+                <input id="topicTitle" value="Build speed" />
+            </div>
+            <div>
+                <label>Topic Notes</label>
+                <input id="topicNotes" value="Discuss improvements" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div>
+                <label>Decision (optional)</label>
+                <input id="decisionDesc" value="Continue with plan" />
+            </div>
+            <div class="actions" style="align-items:end">
+                <button onclick="completeMeeting()">Complete</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>3) Tasks (Action Items)</h2>
+
+        <div class="row">
+            <div>
+                <label>Task title</label>
+                <input id="taskTitle" value="Prepare demo slides" />
+            </div>
+            <div>
+                <label>Owner ID</label>
+                <input id="taskOwnerId" value="u1" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div>
+                <label>Due date</label>
+                <input id="taskDueDate" type="date" />
+            </div>
+            <div class="actions" style="align-items:end">
+                <button onclick="addTask()">Add task to meeting</button>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div>
+                <label>Track tasks (filter by status)</label>
+                <select id="taskFilterStatus">
+                    <option value="">(all)</option>
+                    <option>OPEN</option>
+                    <option>DONE</option>
+                    <option>OVERDUE</option>
+                </select>
+            </div>
+            <div class="actions" style="align-items:end">
+                <button onclick="listTasks()">List tasks</button>
+            </div>
+        </div>
+
+        <div>
+            <label>Selected Task ID</label>
+            <input id="selectedTaskId" placeholder="se poate pune din Response (copy/paste)" />
+            <div class="actions">
+                <button onclick="getTaskById()">Get task</button>
+            </div>
+            <div class="muted">
+                Tip: după ce listezi tasks, ia un <code>id</code> din JSON și pune-l aici.
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div>
+                <label>Change status</label>
+                <select id="taskStatus">
+                    <option>OPEN</option>
+                    <option>DONE</option>
+                    <option>OVERDUE</option>
+                </select>
+            </div>
+            <div class="actions" style="align-items:end">
+                <button onclick="updateTaskStatus()">Update status</button>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div>
+                <label>Review by (user id)</label>
+                <input id="reviewedBy" value="u1" />
+            </div>
+            <div>
+                <label>Review notes</label>
+                <input id="reviewNotes" value="Looks good. Done." />
+            </div>
+        </div>
+        <div class="actions">
+            <button onclick="reviewTask()">Add/Update review</button>
+        </div>
+    </section>
+
+    <section class="card" style="grid-column: 1 / -1;">
+        <h2>Response</h2>
+        <div class="actions">
+            <span id="statusPill" class="pill">Status: <span class="muted">–</span></span>
+            <button onclick="clearOutput()">Clear</button>
+        </div>
+        <pre id="output">{}</pre>
+    </section>
+</main>
+
+<script>
+    // default datetime: tomorrow 10:00
+    (function initDateTime(){
+        const el = document.getElementById('scheduledAt');
+        const d = new Date();
+        d.setDate(d.getDate() + 1);
+        d.setHours(10,0,0,0);
+        const pad = (n)=> String(n).padStart(2,'0');
+        el.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    })();
+
+    // default due date: +3 days
+    (function initDueDate(){
+        const el = document.getElementById('taskDueDate');
+        const d = new Date();
+        d.setDate(d.getDate() + 3);
+        const pad = (n)=> String(n).padStart(2,'0');
+        el.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    })();
+
+    function setStatus(ok, text) {
+        const pill = document.getElementById('statusPill');
+        pill.innerHTML = `Status: <span class="${ok ? 'ok' : 'bad'}">${text}</span>`;
+    }
+
+    function show(obj) {
+        document.getElementById('output').textContent = JSON.stringify(obj, null, 2);
+    }
+
+    function clearOutput() {
+        setStatus(true, '–');
+        show({});
+    }
+
+    function getMeetingIdOrThrow() {
+        const id = document.getElementById('meetingId').value.trim();
+        if (!id) throw new Error('Completează Meeting ID.');
+        return id;
+    }
+
+    function getTaskIdOrThrow() {
+        const id = document.getElementById('selectedTaskId').value.trim();
+        if (!id) throw new Error('Completează Selected Task ID.');
+        return id;
+    }
+
+    function normalizeLocalDateTime(dtLocal) {
+        // "2026-01-20T10:00" => "2026-01-20T10:00:00"
+        if (!dtLocal) return dtLocal;
+        return dtLocal.length === 16 ? (dtLocal + ':00') : dtLocal;
+    }
+
+    async function apiFetch(path, method='GET', body=null) {
+        const opts = { method, headers: {} };
+        if (body !== null) {
+            opts.headers['Content-Type'] = 'application/json';
+            opts.body = JSON.stringify(body);
+        }
+        const res = await fetch(path, opts);
+        const text = await res.text();
+        let data;
+        try { data = text ? JSON.parse(text) : null; }
+        catch { data = { raw: text }; }
+
+        if (!res.ok) {
+            setStatus(false, `${res.status} ${res.statusText}`);
+            show(data);
+            throw new Error(data?.message || res.statusText);
+        }
+        setStatus(true, `${res.status} ${res.statusText}`);
+        show(data);
+        return data;
+    }
+
+    async function createMeeting() {
+        try {
+            const req = {
+                teamId: document.getElementById('teamId').value.trim(),
+                type: document.getElementById('type').value,
+                title: document.getElementById('title').value.trim(),
+                description: document.getElementById('description').value.trim(),
+                scheduledAt: normalizeLocalDateTime(document.getElementById('scheduledAt').value),
+                durationMinutes: Number(document.getElementById('durationMinutes').value),
+                facilitatorId: document.getElementById('facilitatorId').value.trim()
+            };
+            const created = await apiFetch('/api/meetings', 'POST', req);
+            if (created?.id) {
+                document.getElementById('meetingId').value = created.id;
+            }
+        } catch (e) {}
+    }
+
+    async function listMeetings() {
+        try { await apiFetch('/api/meetings'); } catch (e) {}
+    }
+
+    async function getMeeting() {
+        try {
+            const id = getMeetingIdOrThrow();
+            await apiFetch(`/api/meetings/${encodeURIComponent(id)}`);
+        } catch (e) {}
+    }
+
+    async function addParticipant() {
+        try {
+            const id = getMeetingIdOrThrow();
+            const req = {
+                participants: [{
+                    userId: document.getElementById('participantUserId').value.trim(),
+                    attendance: document.getElementById('attendance').value
+                }]
+            };
+            await apiFetch(`/api/meetings/${encodeURIComponent(id)}/participants`, 'POST', req);
+        } catch (e) {}
+    }
+
+    async function startMeeting() {
+        try {
+            const id = getMeetingIdOrThrow();
+            const req = { facilitatorId: document.getElementById('startFacilitatorId').value.trim() };
+            await apiFetch(`/api/meetings/${encodeURIComponent(id)}/start`, 'POST', req);
+        } catch (e) {}
+    }
+
+    async function completeMeeting() {
+        try {
+            const id = getMeetingIdOrThrow();
+
+            const topicTitle = document.getElementById('topicTitle').value.trim();
+            const topicNotes = document.getElementById('topicNotes').value.trim();
+            const decision = document.getElementById('decisionDesc').value.trim();
+
+            const req = {
+                topics: [{ title: topicTitle, notes: topicNotes }],
+                decisions: decision ? [{ description: decision }] : []
+            };
+
+            await apiFetch(`/api/meetings/${encodeURIComponent(id)}/complete`, 'POST', req);
+        } catch (e) {}
+    }
+
+    // ---------------- Tasks ----------------
+
+    async function addTask() {
+        try {
+            const meetingId = getMeetingIdOrThrow();
+            const req = {
+                ownerId: document.getElementById('taskOwnerId').value.trim(),
+                title: document.getElementById('taskTitle').value.trim(),
+                dueDate: document.getElementById('taskDueDate').value
+            };
+            const created = await apiFetch(`/api/meetings/${encodeURIComponent(meetingId)}/tasks`, 'POST', req);
+            if (created?.id) document.getElementById('selectedTaskId').value = created.id;
+        } catch (e) {}
+    }
+
+    async function listTasks() {
+        try {
+            const meetingId = getMeetingIdOrThrow();
+            const status = document.getElementById('taskFilterStatus').value;
+            const url = status ? `/api/meetings/${encodeURIComponent(meetingId)}/tasks?status=${encodeURIComponent(status)}`
+                : `/api/meetings/${encodeURIComponent(meetingId)}/tasks`;
+            await apiFetch(url);
+        } catch (e) {}
+    }
+
+    async function getTaskById() {
+        try {
+            const taskId = getTaskIdOrThrow();
+            await apiFetch(`/api/tasks/${encodeURIComponent(taskId)}`);
+        } catch (e) {}
+    }
+
+    async function updateTaskStatus() {
+        try {
+            const taskId = getTaskIdOrThrow();
+            const req = { status: document.getElementById('taskStatus').value };
+            await apiFetch(`/api/tasks/${encodeURIComponent(taskId)}/status`, 'PATCH', req);
+        } catch (e) {}
+    }
+
+    async function reviewTask() {
+        try {
+            const taskId = getTaskIdOrThrow();
+            const req = {
+                reviewedBy: document.getElementById('reviewedBy').value.trim(),
+                reviewNotes: document.getElementById('reviewNotes').value.trim()
+            };
+            await apiFetch(`/api/tasks/${encodeURIComponent(taskId)}/review`, 'POST', req);
+        } catch (e) {}
+    }
+</script>
+</body>
+</html>
