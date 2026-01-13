@@ -10,3 +10,5 @@ public class MeetingsApplication {
         SpringApplication.run(MeetingsApplication.class, args);
     }
 }
+
+
