@@ -9,6 +9,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "meetings")
 @EntityListeners(MeetingAuditListener.class)
@@ -63,17 +67,22 @@ public class Meeting {
 
     // ------------ RELAȚII DE AGREGAT ----------------
 
+    @JsonManagedReference("meeting-topics")
     @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Topic> topics = new ArrayList<>();
 
+    @JsonManagedReference("meeting-decisions")
     @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Decision> decisions = new ArrayList<>();
 
+    @JsonManagedReference("meeting-actionItems")
     @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ActionItem> actionItems = new ArrayList<>();
 
+    @JsonManagedReference("meeting-participants")
     @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Participant> participants = new ArrayList<>();
+
 
     // ------------ LOGICĂ EXISTENTĂ ----------------
 

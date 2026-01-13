@@ -6,6 +6,10 @@ import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "action_items")
 public class ActionItem {
@@ -15,10 +19,11 @@ public class ActionItem {
     @NotNull
     private String id;
 
+    @JsonBackReference("meeting-actionItems")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meeting_id", nullable = false)
-    @NotNull
     private Meeting meeting;
+
 
     @NotNull
     @Column(name = "owner_id", nullable = false, length = 36)

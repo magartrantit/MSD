@@ -4,6 +4,10 @@ import com.example.meetings.domain.model.enums.Attendance;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "participants")
 public class Participant {
@@ -13,10 +17,11 @@ public class Participant {
     @NotNull
     private String id;
 
+    @JsonBackReference("meeting-participants")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meeting_id", nullable = false)
-    @NotNull
     private Meeting meeting;
+
 
     @NotNull
     @Column(name = "user_id", nullable = false, length = 36)
